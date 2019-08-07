@@ -108,10 +108,13 @@ def _prepare_browse_response(response):
                 prop["size"]
             )
 
-    response["entries"] = list(map(base64.b64encode, response["entries"]))
-    response["directories"] = list(map(base64.b64encode, response["directories"]))
+    def _b64(data):
+        return base64.b64encode(data.encode("utf8")).decode("utf8")
+
+    response["entries"] = list(map(_b64, response["entries"]))
+    response["directories"] = list(map(_b64, response["entries"]))
     response["properties"] = {
-        base64.b64encode(k): v for k, v in response.get("properties", {}).items()
+        _b64(k): v for k, v in response.get("properties", {}).items()
     }
 
     return response
@@ -854,10 +857,12 @@ def copy_to_arrange(request, sources=None, destinations=None, fetch_children=Fal
     if sources is None or destinations is None:
         # List of sources & destinations
         if "filepath[]" in request.POST or "destination[]" in request.POST:
-            sources = list(map(base64.b64decode, request.POST.getlist("filepath[]", [])))
-            destinations = list(map(
-                base64.b64decode, request.POST.getlist("destination[]", [])
-            ))
+            sources = list(
+                map(base64.b64decode, request.POST.getlist("filepath[]", []))
+            )
+            destinations = list(
+                map(base64.b64decode, request.POST.getlist("destination[]", []))
+            )
         # Single path representing tree
         else:
             fetch_children = True
