@@ -103,14 +103,14 @@ class TestAPIv2(TestCase):
 class TestValidate(TestCase):
     fixtures = ["test_user"]
 
-    VALID_AVALON_CSV = """Avalon Demo Batch,archivist1@example.com,,,,,,,,,,,,,,,,,,,,,,
+    VALID_AVALON_CSV = b"""Avalon Demo Batch,archivist1@example.com,,,,,,,,,,,,,,,,,,,,,,
 Bibliographic ID,Bibliographic ID Label,Title,Creator,Contributor,Contributor,Contributor,Contributor,Contributor,Publisher,Date Created,Date Issued,Abstract,Topical Subject,Topical Subject,Publish,File,Skip Transcoding,Label,File,Skip Transcoding,Label,Note Type,Note
 ,,Symphony no. 3,"Mahler, Gustav, 1860-1911",,,,,,,,1996,,,,yes,assets/agz3068a.wav,no,CD 1,,,,local,This was batch ingested without skip transcoding
 ,,Féte (Excerpt),"Langlais, Jean, 1907-1991","Young, Christopher C. (Christopher Clark)",,,,,William and Gayle Cook Music Library,,2010,"Recorded on May 2, 2010, Auer Concert Hall, Indiana University, Bloomington.",Organ music,,yes,assets/OrganClip.mp4,yes,,,,,local,This was batch ingested with multiple quality level skip transcoding
 ,,Beginning Responsibility: Lunchroom Manners,Coronet Films,,,,,,Coronet Films,,1959,"The rude, clumsy puppet Mr. Bungle shows kids how to behave in the school cafeteria - the assumption being that kids actually want to behave during lunch. This film has a cult following since it appeared on a Pee Wee Herman HBO special.",Social engineering,Puppet theater,yes,assets/lunchroom_manners_512kb.high.mp4,yes,Lunchroom 1,assets/lunchroom_manners_512kb.mp4,yes,Lunchroom Again,local,This was batch ingested with skip transcoding and with structure
 """
 
-    INVALID_AVALON_CSV = """Avalon Demo Batch,archivist1@example.com,,,,,,,,,,,,,,,,,,,,,,
+    INVALID_AVALON_CSV = b"""Avalon Demo Batch,archivist1@example.com,,,,,,,,,,,,,,,,,,,,,,
 Bibliographic ID,Bibliographic ID Lbl,Title,Creator,Contributor,Contributor,Contributor,Contributor,Contributor,Publisher,Date Created,Date Issued,Abstract,Topical Subject,Topical Subject,Publish,File,Skip Transcoding,Label,File,Skip Transcoding,Label,Note Type,Note
 ,,Symphony no. 3,"Mahler, Gustav, 1860-1911",,,,,,,,1996,,,,Yes,assets/agz3068a.wav,no,CD 1,,,,local,This was batch ingested without skip transcoding
 ,,Féte (Excerpt),"Langlais, Jean, 1907-1991","Young, Christopher C. (Christopher Clark)",,,,,William and Gayle Cook Music Library,,2010,"Recorded on May 2, 2010, Auer Concert Hall, Indiana University, Bloomington.",Organ music,,Yes,assets/OrganClip.mp4,yes,,,,,local,This was batch ingested with multiple quality level skip transcoding
@@ -150,13 +150,13 @@ Bibliographic ID,Bibliographic ID Lbl,Title,Creator,Contributor,Contributor,Cont
         }
 
     def test_avalon_pass(self):
-        resp = self._post("avalon", self.VALID_AVALON_CSV.encode("utf8"))
+        resp = self._post("avalon", self.VALID_AVALON_CSV)
 
         assert resp.status_code == 200
         assert json.loads(resp.content.decode()) == {"valid": True}
 
     def test_avalon_err(self):
-        resp = self._post("avalon", self.INVALID_AVALON_CSV.encode("utf8"))
+        resp = self._post("avalon", self.INVALID_AVALON_CSV)
 
         assert resp.status_code == 400
         assert json.loads(resp.content.decode()) == {

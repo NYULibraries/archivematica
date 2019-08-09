@@ -15,6 +15,7 @@ New validators must be added to the `` _VALIDATORS`` registry.
 from __future__ import absolute_import
 import collections
 import csv
+from io import BytesIO
 from six import PY2, StringIO
 
 
