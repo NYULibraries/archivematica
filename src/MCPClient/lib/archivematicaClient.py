@@ -219,6 +219,8 @@ def execute_command(supported_modules, gearman_worker, gearman_job):
                         kwargs.update(
                             {"stdout": job.get_stdout(), "stderror": job.get_stderr()}
                         )
+                    elif kwargs["exitcode"] > 0:
+                        kwargs["stderror"] = job.get_stderr()
                     Task.objects.filter(taskuuid=job.UUID).update(**kwargs)
 
                     results[job.UUID] = {"exitCode": job.get_exit_code()}
